@@ -25,6 +25,10 @@ module.exports = (g) => {
       res.should.have.status(200)
       res = await r.post(url).send({ value: 1 })
       res.should.have.status(400)
+      res = await r.delete(url)
+      res.should.have.status(200)
+      res = await r.post(url).send({ value: 1 })
+      res.should.have.status(200)
     })
   })
 }

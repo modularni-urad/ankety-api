@@ -31,8 +31,8 @@ export async function createVote (knex, UID, surveyId, optionID, value) {
 }
 
 export async function deleteVote (knex, UID, surveyId, optionID) {
-  const s = await knex(TNAMES.SURVEYS).where({ id: surveyId }).fisrt()
+  const s = await knex(TNAMES.SURVEYS).where({ id: surveyId }).first()
   _checkVotable(s)
   const cond = { author: UID, option_id: optionID }
-  return knex(TNAMES.PARO_VOTES).where(cond).delete()
+  return knex(TNAMES.VOTES).where(cond).delete()
 }
