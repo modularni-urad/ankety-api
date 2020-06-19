@@ -16,7 +16,7 @@ export function getExisting (knex, UID, surveyId) {
 export async function createVote (knex, UID, surveyId, optionID, value) {
   const s = await knex(TNAMES.SURVEYS).where({ id: surveyId }).first()
   _checkVotable(s)
-  const sett = s.vote_sett.split(',')
+  const sett = _.each(s.vote_sett.split(','), i => Number(i))
   const existing = await getExisting(knex, UID, surveyId)
   const existingPositives = _.filter(existing, i => i.value > 0).length
   if (value > 0 && existingPositives >= sett[0]) {
