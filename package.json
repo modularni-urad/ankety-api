@@ -1,0 +1,36 @@
+{
+  "name": "modularni-urad-ankety-api",
+  "version": "0.1.0",
+  "description": "API pro ankety",
+  "main": "server.js",
+  "scripts": {
+    "start": "node -r esm -r dotenv/config server.js",
+    "startdbg": "node -r esm -r dotenv/config --inspect-brk server.js",
+    "test": "mocha -r esm -r ./test/utils/env --exit './test/main.js'",
+    "testdbg": "mocha -r esm -r ./test/utils/env --inspect-brk './test/main.js'"
+  },
+  "author": "Vaclav Klecanda <vencax77@gmail.com> (http://vxk.cz)",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "cors": "^2.8.4",
+    "dotenv": "^6.0.0",
+    "esm": "^3.2.25",
+    "express": "^4.16.2",
+    "knex-filter-loopback": "^0.3.0",
+    "modularni-urad-utils": "https://github.com/modularni-urad/utils",
+    "morgan": "^1.9.0",
+    "underscore": "^1.9.1"
+  },
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "chai-http": "^4.2.0",
+    "expect": "^1.20.2",
+    "mocha": "^5.2.0",
+    "moment": "^2.27.0",
+    "sqlite3": "^4.0.4"
+  },
+  "engines": {
+    "node": ">=12"
+  }
+}
