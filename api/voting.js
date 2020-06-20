@@ -16,14 +16,13 @@ export function getExisting (knex, UID, surveyId) {
 export async function createVote (knex, UID, surveyId, optionID, value) {
   const s = await knex(TNAMES.SURVEYS).where({ id: surveyId }).first()
   _checkVotable(s)
-  const sett = _.each(s.vote_sett.split(','), i => Number(i))
   const existing = await getExisting(knex, UID, surveyId)
   const existingPositives = _.filter(existing, i => i.value > 0).length
-  if (value > 0 && existingPositives >= sett[0]) {
+  if (value > 0 && existingPositives >= s.maxpositive) {
     throw new Error('maximum positive votes exceeded')
   }
   const existingNegatives = _.filter(existing, i => i.value < 0).length
-  if (value < 0 && existingNegatives >= sett[1]) {
+  if (value < 0 && existingNegatives >= s.maxnegative) {
     throw new Error('maximum negative votes exceeded')
   }
   const data = { author: UID, survey_id: surveyId, option_id: optionID, value }

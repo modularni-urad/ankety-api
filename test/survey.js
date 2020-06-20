@@ -10,7 +10,7 @@ module.exports = (g) => {
     name: 'name1',
     desc: 'desc1',
     image: 'image1',
-    vote_sett: '1,0,1',
+    maxpositive: 2,
     voting_start: moment().add(1, 'h'),
     voting_end: moment().add(2, 'h')
   }
@@ -45,7 +45,7 @@ module.exports = (g) => {
       const res = await r.get('/surveys')
       res.status.should.equal(200)
       res.body.should.have.lengthOf(1)
-      res.body[0].vote_sett.should.equal(s1.vote_sett)
+      res.body[0].maxpositive.should.equal(s1.maxpositive)
       s1.id = res.body[0].id
     })
 

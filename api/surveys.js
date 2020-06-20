@@ -13,10 +13,10 @@ export default (ctx) => {
     }).catch(next)
   })
 
-  const editables = ['name', 'desc', 'image', 'vote_sett', 'voting_start', 'voting_end']
+  const noteditables = ['id', 'author', 'created']
 
   async function createProject (req) {
-    req.body = _.pick(req.body, editables)
+    req.body = _.omit(req.body, noteditables)
     Object.assign(req.body, { author: auth.getUID(req) })
     await knex(TNAMES.SURVEYS).returning('id').insert(req.body)
   }
