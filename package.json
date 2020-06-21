@@ -18,6 +18,7 @@
     "esm": "^3.2.25",
     "express": "^4.16.2",
     "knex-filter-loopback": "^0.3.0",
+    "knex-paginate": "^1.2.1",
     "modularni-urad-utils": "https://github.com/modularni-urad/utils",
     "morgan": "^1.9.0",
     "underscore": "^1.9.1"

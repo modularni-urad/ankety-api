@@ -7,7 +7,12 @@ export default (ctx) => {
   const app = ctx.express()
 
   app.get('/', (req, res, next) => {
-    knex(TNAMES.SURVEYS).where(whereFilter(req.query)).then(info => {
+    const perPage = Number(req.query.perPage) || 10
+    const currentPage = Number(req.query.currentPage) || null
+    const query = _.omit(req.query, 'currentPage', 'perPage')
+    let qb = knex(TNAMES.SURVEYS).where(whereFilter(query))
+    qb = currentPage ? qb.paginate({ perPage, currentPage }) : qb
+    qb.then(info => {
       res.json(info)
       next()
     }).catch(next)

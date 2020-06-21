@@ -49,6 +49,13 @@ module.exports = (g) => {
       s1.id = res.body[0].id
     })
 
+    it('shall get the pok1 paginated', async () => {
+      const res = await r.get('/surveys?currentPage=1')
+      res.status.should.equal(200)
+      res.body.data.should.have.lengthOf(1)
+      res.body.data[0].maxpositive.should.equal(s1.maxpositive)
+    })
+
     it('shall create a new option', async () => {
       const res = await r.post(`/options/${s1.id}`).send(opt1)
       res.status.should.equal(200)
