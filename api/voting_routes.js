@@ -16,7 +16,7 @@ export default (ctx) => {
     auth.required,
     JSONBodyParser, (req, res, next) => {
       const { id, surveyId } = req.params
-      createVote(knex, auth.getUID(req), id, surveyId, req.body.value)
+      createVote(knex, auth.getUID(req), surveyId, id, req.body.value)
         .then(() => res.json(req.body.value)).catch(next)
     })
 
