@@ -35,7 +35,7 @@ export default (ctx) => {
     if (!s) throw new Error(404)
     const now = new Date()
     if (now > s.voting_start) throw new Error('too late, voting in progress')
-    req.body = _.pick(req.body, editables)
+    req.body = _.omit(req.body, noteditables)
     await knex(TNAMES.SURVEYS).where({ id: req.params.id }).update(req.body)
   }
 
