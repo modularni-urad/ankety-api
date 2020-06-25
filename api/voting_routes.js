@@ -1,4 +1,4 @@
-import { getExisting, createVote, deleteVote } from './voting'
+import { getExisting, createVote, deleteVote, getResults } from './voting'
 
 export default (ctx) => {
   const { knex, auth, JSONBodyParser } = ctx
@@ -9,6 +9,12 @@ export default (ctx) => {
       .then(found => {
         res.json(found)
       })
+      .catch(next)
+  })
+
+  app.get('/results/:id([0-9]+)', (req, res, next) => {
+    getResults(knex, req.params.id)
+      .then(found => { res.json(found) })
       .catch(next)
   })
 

@@ -11,6 +11,7 @@ module.exports = (g) => {
     desc: 'desc1',
     image: 'image1',
     maxpositive: 2,
+    maxnegative: 1,
     voting_start: moment().add(1, 'h'),
     voting_end: moment().add(2, 'h')
   }

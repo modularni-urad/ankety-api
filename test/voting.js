@@ -19,7 +19,7 @@ module.exports = (g) => {
       data.options = optionsRes.body
     })
 
-    it('must create a new vote', async () => {
+    it('must cast a new vote', async () => {
       const url = `/votes/${data.s1.id}/${data.options[0].id}`
       let res = await r.post(url).send({ value: 1 })
       res.should.have.status(200)
@@ -29,6 +29,25 @@ module.exports = (g) => {
       res.should.have.status(200)
       res = await r.post(url).send({ value: 1 })
       res.should.have.status(200)
+    })
+
+    async function _cast (optId, value, UID) {
+      g.UID = UID
+      const url = `/votes/${data.s1.id}/${data.options[0].id}`
+      const res = await r.post(url).send({ value: value })
+      res.should.have.status(200)
+    }
+
+    it('must cast another votes and then get results', async () => {
+      await _cast(data.options[0].id, 1, 400)
+      await _cast(data.options[0].id, 1, 401)
+      await _cast(data.options[0].id, 1, 402)
+      await _cast(data.options[0].id, -1, 405)
+      const url = `/votes/results/${data.s1.id}`
+      const res = await r.get(url)
+      res.should.have.status(200)
+      res.body.pos[0].option_id.should.equal(data.options[0].id)
+      res.body.pos[0].sum.should.equal(4)
     })
   })
 }

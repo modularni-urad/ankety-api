@@ -8,6 +8,18 @@ function _checkVotable (survey) {
   }
 }
 
+export function getResults (knex, surveyId) {
+  const positives = knex.select(knex.raw('option_id, SUM(option_id) as sum'))
+    .from(TNAMES.VOTES)
+    .where({ survey_id: surveyId }).where('value', '>', 0)
+  const negatives = knex.select(knex.raw('option_id, SUM(option_id) as sum'))
+    .from(TNAMES.VOTES)
+    .where({ survey_id: surveyId }).where('value', '<', 0)
+  return Promise.all([positives, negatives]).then(res => {
+    return { pos: res[0], neg: res[1] }
+  })
+}
+
 export function getExisting (knex, UID, surveyId) {
   const cond = { author: UID, survey_id: surveyId }
   return knex(TNAMES.VOTES).where(cond)
