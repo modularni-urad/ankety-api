@@ -11,12 +11,19 @@ function _checkVotable (survey) {
 export function getResults (knex, surveyId) {
   const positives = knex.select(knex.raw('option_id, SUM(option_id) as sum'))
     .from(TNAMES.VOTES)
-    .where({ survey_id: surveyId }).where('value', '>', 0)
+    .where({ survey_id: surveyId }).where('value', '>', 0).groupBy('option_id')
   const negatives = knex.select(knex.raw('option_id, SUM(option_id) as sum'))
     .from(TNAMES.VOTES)
-    .where({ survey_id: surveyId }).where('value', '<', 0)
+    .where({ survey_id: surveyId }).where('value', '<', 0).groupBy('option_id')
   return Promise.all([positives, negatives]).then(res => {
-    return { pos: res[0], neg: res[1] }
+    function _2obj (acc, i) {
+      acc[i.option_id] = i.sum
+      return acc
+    }
+    return {
+      pos: _.reduce(res[0], _2obj, {}),
+      neg: _.reduce(res[1], _2obj, {})
+    }
   })
 }
 

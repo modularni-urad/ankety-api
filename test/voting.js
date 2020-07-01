@@ -46,8 +46,7 @@ module.exports = (g) => {
       const url = `/votes/results/${data.s1.id}`
       const res = await r.get(url)
       res.should.have.status(200)
-      res.body.pos[0].option_id.should.equal(data.options[0].id)
-      res.body.pos[0].sum.should.equal(4)
+      res.body.pos[data.options[0].id].should.equal(4)
     })
   })
 }
