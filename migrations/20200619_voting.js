@@ -1,7 +1,11 @@
 import { TNAMES } from '../consts'
 
 exports.up = (knex, Promise) => {
-  return knex.schema.createTable(TNAMES.VOTES, (table) => {
+  const builder = process.env.CUSTOM_MIGRATION_SCHEMA
+    ? knex.schema.withSchema(process.env.CUSTOM_MIGRATION_SCHEMA)
+    : knex.schema
+
+  return builder.createTable(TNAMES.VOTES, (table) => {
     table.integer('survey_id').notNullable()
       .references('id').inTable(TNAMES.SURVEYS)
     table.integer('option_id').notNullable()
@@ -14,5 +18,9 @@ exports.up = (knex, Promise) => {
 }
 
 exports.down = (knex, Promise) => {
-  return knex.schema.dropTable(TNAMES.VOTES)
+  const builder = process.env.CUSTOM_MIGRATION_SCHEMA
+    ? knex.schema.withSchema(process.env.CUSTOM_MIGRATION_SCHEMA)
+    : knex.schema
+
+  return builder.dropTable(TNAMES.VOTES)
 }

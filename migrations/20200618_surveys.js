@@ -1,7 +1,11 @@
 import { TNAMES } from '../consts'
 
 exports.up = (knex, Promise) => {
-  return knex.schema.createTable(TNAMES.SURVEYS, (table) => {
+  const builder = process.env.CUSTOM_MIGRATION_SCHEMA
+    ? knex.schema.withSchema(process.env.CUSTOM_MIGRATION_SCHEMA)
+    : knex.schema
+
+  return builder.createTable(TNAMES.SURVEYS, (table) => {
     table.increments('id').primary()
     table.string('name').notNullable()
     table.string('author').notNullable()
@@ -17,5 +21,8 @@ exports.up = (knex, Promise) => {
 }
 
 exports.down = (knex, Promise) => {
-  return knex.schema.dropTable(TNAMES.SURVEYS)
+  const builder = process.env.CUSTOM_MIGRATION_SCHEMA
+    ? knex.schema.withSchema(process.env.CUSTOM_MIGRATION_SCHEMA)
+    : knex.schema
+  return builder.dropTable(TNAMES.SURVEYS)
 }

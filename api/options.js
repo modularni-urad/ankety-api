@@ -1,56 +1,52 @@
-import { TNAMES } from '../consts'
-import _ from 'underscore'
+import { TNAMES, getQB } from '../consts'
 
 export default (ctx) => {
-  const { knex, auth, JSONBodyParser } = ctx
-  const app = ctx.express()
-
-  app.get('/:id([0-9]+)', (req, res, next) => {
-    knex(TNAMES.OPTIONS).where({ survey_id: req.params.id }).then(info => {
-      res.json(info)
-      next()
-    }).catch(next)
-  })
-
+  const { knex, ErrorClass } = ctx
+  const _ = ctx.require('underscore')
   const editables = ['title', 'desc', 'image', 'link']
+  
+  return { list, create, update, remove }
 
-  async function _checkEditable (surveyId) {
-    const s = await knex(TNAMES.SURVEYS).where({ id: surveyId }).first()
-    if (!s) throw new Error(404)
+  async function _checkEditable (surveyId, schema) {
+    const s = await getQB(knex, TNAMES.SURVEYS, schema).where({ id: surveyId }).first()
+    if (!s) throw new ErrorClass(404, 'survey not found')
     const now = new Date()
-    if (now > s.voting_start) throw new Error('too late, voting in progress')
+    if (now > s.voting_start) throw new ErrorClass(400, 'too late, voting in progress')
     return s
   }
 
-  async function createOption (req) {
-    await _checkEditable(req.params.id)
-    req.body = _.pick(req.body, editables)
-    Object.assign(req.body, { survey_id: req.params.id })
-    await knex(TNAMES.OPTIONS).returning('id').insert(req.body)
+  function list (surveyId, schema) {
+    return getQB(knex, TNAMES.OPTIONS, schema).where({ survey_id: surveyId })
   }
 
-  app.post('/:id([0-9]+)', auth.required, JSONBodyParser, (req, res, next) => {
-    createOption(req).then(createdid => (res.json(createdid))).catch(next)
-  })
-
-  async function updateOption (req) {
-    await _checkEditable(req.params.survey_id)
-    req.body = _.pick(req.body, editables)
-    await knex(TNAMES.OPTIONS).where({ id: req.params.id }).update(req.body)
+  async function create (surveyId, body, schema) {
+    await _checkEditable(surveyId, schema)
+    body = _.pick(body, editables)
+    Object.assign(body, { survey_id: surveyId })
+    try {
+      return getQB(knex, TNAMES.OPTIONS, schema).returning('*').insert(body)
+    } catch (err) {
+      throw new ErrorClass(400, err.toString())
+    }
   }
 
-  app.put('/:survey_id([0-9]+)/:id([0-9]+)',
-    auth.required,
-    JSONBodyParser,
-    (req, res, next) => {
-      updateOption(req).then(val => (res.json(val))).catch(next)
-    })
+  async function update (surveyId, id, body, schema) {
+    await _checkEditable(surveyId, schema)
+    body = _.pick(body, editables)
+    try {
+      return getQB(knex, TNAMES.OPTIONS, schema).returning('*')
+        .where({ id }).update(body)
+    } catch (err) {
+      throw new ErrorClass(400, err.toString())
+    }
+  }
 
-  app.delete('/:id([0-9]+)', auth.required, (req, res, next) => {
-    knex(TNAMES.SURVEYS).where({ id: req.params.id }).del().then(r => {
-      res.json(r)
-    }).catch(next)
-  })
-
-  return app
+  async function remove (surveyId, id, schema) {
+    await _checkEditable(surveyId, schema)
+    try {
+      return getQB(knex, TNAMES.OPTIONS, schema).where({ id }).del()
+    } catch (err) {
+      throw new ErrorClass(400, err.toString())
+    }
+  }
 }

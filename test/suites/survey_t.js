@@ -1,10 +1,6 @@
-/* global describe it */
-import moment from 'moment'
-const chai = require('chai')
-chai.should()
-
 module.exports = (g) => {
-  const r = chai.request(g.baseurl)
+  const r = g.chai.request(g.baseurl)
+  const moment = g.require('moment')
 
   const s1 = {
     name: 'name1',
@@ -27,7 +23,7 @@ module.exports = (g) => {
   return describe('survey', () => {
     //
     it('shall create a new item p1', async () => {
-      const res = await r.post('/surveys').send(s1)
+      const res = await r.post('/').send(s1).set('Authorization', 'Bearer f')
       res.status.should.equal(200)
     })
 
@@ -43,7 +39,7 @@ module.exports = (g) => {
     // })
 
     it('shall get the pok1', async () => {
-      const res = await r.get('/surveys')
+      const res = await r.get('/')
       res.status.should.equal(200)
       res.body.should.have.lengthOf(1)
       res.body[0].maxpositive.should.equal(s1.maxpositive)
@@ -51,16 +47,18 @@ module.exports = (g) => {
     })
 
     it('shall get the pok1 paginated', async () => {
-      const res = await r.get('/surveys?currentPage=1')
+      const res = await r.get('/?currentPage=1')
       res.status.should.equal(200)
       res.body.data.should.have.lengthOf(1)
       res.body.data[0].maxpositive.should.equal(s1.maxpositive)
     })
 
     it('shall create a new option', async () => {
-      const res = await r.post(`/options/${s1.id}`).send(opt1)
+      const res = await r.post(`/${s1.id}`).send(opt1)
+        .set('Authorization', 'Bearer f')
       res.status.should.equal(200)
-      const res2 = await r.post(`/options/${s1.id}`).send(opt2)
+      const res2 = await r.post(`/${s1.id}`).send(opt2)
+        .set('Authorization', 'Bearer f')
       res2.status.should.equal(200)
     })
   })
