@@ -14,14 +14,14 @@ export default (ctx) => {
 
   function getResults (surveyId, schema) {
     let positives = knex.select(knex.raw('option_id, SUM(option_id) as sum'))
-    schema && positives.withSchema(schema)
-    positives.from(TNAMES.VOTES)
+    positives = schema ? positives.withSchema(schema) : positives
+    positives = positives.from(TNAMES.VOTES)
       .where({ survey_id: surveyId })
       .where('value', '>', 0)
       .groupBy('option_id')
     let negatives = knex.select(knex.raw('option_id, SUM(option_id) as sum'))
-    schema && negatives.withSchema(schema)
-    negatives.from(TNAMES.VOTES)
+    negatives = schema ? negatives.withSchema(schema) : negatives
+    negatives = negatives.from(TNAMES.VOTES)
       .where({ survey_id: surveyId })
       .where('value', '<', 0)
       .groupBy('option_id')

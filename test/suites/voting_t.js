@@ -13,7 +13,26 @@ module.exports = (g) => {
       data.options = optionsRes.body
     })
 
-    it('must cast a new vote', async () => {
+    it('must not cast a new vote, not in voting time window', async () => {
+      const url = `/votes/${data.s1.id}/${data.options[0].id}`
+      let res = await r.post(url).send({ value: 1 }).set('Authorization', 'Bearer f')
+      res.should.have.status(400)
+    })
+
+    it('shall update survey to voting time window', async () => {
+      const res = await r.put(`/${data.s1.id}`).send({ voting_start: new Date() })
+        .set('Authorization', 'Bearer f')
+      res.status.should.equal(200)
+    })
+
+    it('must not update survey coz voting has begun', async () => {
+      const res = await r.put(`/${data.s1.id}`).send({ desc: 'new desc' })
+        .set('Authorization', 'Bearer f')
+      res.status.should.equal(400)
+    })
+
+    it('shall cast a new vote', async () => {
+      g.mockUser.id = 42
       const url = `/votes/${data.s1.id}/${data.options[0].id}`
       let res = await r.post(url).send({ value: 1 }).set('Authorization', 'Bearer f')
       res.should.have.status(200)
@@ -40,7 +59,7 @@ module.exports = (g) => {
       const url = `/results/${data.s1.id}`
       const res = await r.get(url)
       res.should.have.status(200)
-      res.body.pos[data.options[0].id].should.equal(4)
+      res.body.pos[data.options[0].id].toString().should.equal('4')
     })
   })
 }
