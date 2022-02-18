@@ -1,4 +1,4 @@
-import { TNAMES } from '../consts'
+import { TNAMES, STATES } from '../consts'
 
 exports.up = (knex, Promise) => {
   const builder = process.env.CUSTOM_MIGRATION_SCHEMA
@@ -16,6 +16,7 @@ exports.up = (knex, Promise) => {
     table.integer('maxperoption').defaultTo(1)
     table.timestamp('voting_start').notNullable()
     table.timestamp('voting_end').notNullable()
+    table.string('status', 8).notNullable().defaultTo(STATES.WAITING)
     table.timestamp('created').notNullable().defaultTo(knex.fn.now())
   })
 }
