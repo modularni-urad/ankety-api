@@ -1,4 +1,5 @@
 import MWarez from './options'
+import { trustedAuth } from './utils'
 
 export default (ctx, app) => {
   const { auth, bodyParser } = ctx
@@ -10,7 +11,7 @@ export default (ctx, app) => {
     }).catch(next)
   })
 
-  app.post('/:id([0-9]+)', auth.session, auth.required, bodyParser, (req, res, next) => {
+  app.post('/:id([0-9]+)', auth.session, trustedAuth, auth.required, bodyParser, (req, res, next) => {
     MW.create(req.params.id, req.body, req.tenantid).then(created => {
       res.json(created)
     }).catch(next)

@@ -1,6 +1,7 @@
 import MWarez from './surveys'
 import OptionRoutes from './option_routes'
 import VotingRoutes from './voting_routes'
+import { trustedAuth } from './utils'
 
 export default (ctx) => {
   const { auth, bodyParser } = ctx
@@ -11,7 +12,7 @@ export default (ctx) => {
     MW.list(req.query, req.tenantid).then(found => res.json(found)).catch(next)
   })
 
-  app.post('/', auth.session, auth.required, bodyParser, (req, res, next) => {
+  app.post('/', auth.session, trustedAuth, auth.required, bodyParser, (req, res, next) => {
     MW.create(req.body, req.user, req.tenantid).then(created => {
       res.json(created)
     }).catch(next)
